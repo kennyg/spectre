@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       },
       outDir: "dist",
       sourcemap: production ? false : "inline",
-      minify: production ? "esbuild" : false,
+      minify: production,
       target: "es2022",
       rollupOptions: {
         external: [

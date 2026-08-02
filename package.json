@@ -7,17 +7,17 @@
   "scripts": {
     "dev": "vite build --mode development",
     "build": "vite build --mode production",
-    "build:pty:electron": "node-gyp rebuild --runtime=electron --target=37.6.0 --dist-url=https://electronjs.org/headers --directory node_modules/node-pty",
-    "test": "bun test"
+    "test": "bun test",
+    "postinstall": "chmod +x node_modules/node-pty/prebuilds/darwin-*/spawn-helper 2>/dev/null || true"
   },
   "dependencies": {
     "ghostty-web": "^0.4.0",
-    "node-pty": "^1.0.0"
+    "node-pty": "^1.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.30",
-    "obsidian": "^1.5.7",
-    "typescript": "^5.4.5",
-    "vite": "^8.0.3"
+    "@types/node": "^20.19.43",
+    "obsidian": "^1.13.1",
+    "typescript": "^5.9.3",
+    "vite": "^8.2.0"
   }
 }
