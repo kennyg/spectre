@@ -1,0 +1,13 @@
+[tools]
+# Node 24 is the current LTS line ("Krypton"). nub augments stock Node rather than
+# replacing it, so this is the Node the plugin's tests and builds actually run on —
+# and it is the same major that Obsidian's Electron ships.
+node = "24"
+
+# Pinned to match devEngines.packageManager in package.json (^0.6.0). Keep the two in
+# step: bumping one without the other trips nub's own devEngines warning.
+nub = "0.6.0"
+
+# oxlint and typescript are deliberately NOT here. They are devDependencies, so their
+# versions are locked in pnpm-lock.yaml and installed by `nub install`. Listing them
+# here too would create a second source of truth that silently drifts.

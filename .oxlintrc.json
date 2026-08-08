@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error"
+  },
+  "rules": {
+    "no-promise-executor-return": "error"
+  },
+  "ignorePatterns": ["dist", "main.js", "node_modules"]
+}

@@ -107,8 +107,13 @@ class SpectreTerminalView extends ItemView {
       e.stopPropagation();
     });
 
-    // 5. Fit terminal to container after DOM layout
-    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    // 5. Fit terminal to container after DOM layout.
+    // NOTE: requestAnimationFrame does not fire while the window is hidden, so a terminal
+    // opened in a background window waits here — and the PTY below is not spawned until
+    // the window is shown. That is intentional laziness, not a hang.
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => resolve());
+    });
     this.fitAddon.fit();
     this.fitAddon.observeResize();
 
@@ -118,7 +123,8 @@ class SpectreTerminalView extends ItemView {
       const nodePtyPath = pluginDir
         ? join(pluginDir, "node_modules", "node-pty")
         : "node-pty";
-      // eslint-disable-next-line @typescript-eslint/no-require-imports -- Native node-pty module needs runtime require() for dynamic path resolution in Electron
+      // oxlint-disable-next-line typescript/no-require-imports -- the native node-pty
+      // module needs a runtime require() for dynamic path resolution under Electron
       ({ spawn: spawnPty } = require(nodePtyPath) as typeof import("node-pty"));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
