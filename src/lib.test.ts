@@ -1,16 +1,17 @@
-import { describe, expect, it, mock } from "bun:test";
+import { describe, it, mock } from "node:test";
+import assert from "node:assert/strict";
 import { join } from "path";
 
 describe("loadGhostty", () => {
   it("loads the real WASM and returns a Ghostty instance", async () => {
     const { loadGhostty } = await import("./lib");
-    const wasmPath = join(import.meta.dir, "..", "ghostty-vt.wasm");
+    const wasmPath = join(import.meta.dirname, "..", "ghostty-vt.wasm");
 
     const ghostty = await loadGhostty(wasmPath);
 
-    expect(ghostty).toBeDefined();
-    expect(typeof ghostty.createTerminal).toBe("function");
-    expect(typeof ghostty.createKeyEncoder).toBe("function");
+    assert.notStrictEqual(ghostty, undefined);
+    assert.strictEqual(typeof ghostty.createTerminal, "function");
+    assert.strictEqual(typeof ghostty.createKeyEncoder, "function");
   });
 });
 
@@ -34,51 +35,52 @@ describe("buildThemeFromObsidian", () => {
       "--color-base-100": "#ffffff",
     };
 
-    const mockGetPropertyValue = mock((name: string) => cssVars[name] ?? "");
+    const mockGetPropertyValue = mock.fn((name: string) => cssVars[name] ?? "");
     globalThis.getComputedStyle = (() => ({
       getPropertyValue: mockGetPropertyValue,
     })) as any;
     globalThis.document = { body: {} } as any;
 
-    // Re-import to pick up the mocked globals
-    // Use a cache-busting query so bun doesn't serve the cached module
-    const { buildThemeFromObsidian } = await import(`./lib?t=${Date.now()}`);
+    // Re-import to pick up the mocked globals.
+    // Node's ESM loader caches by resolved URL, so a query string forces a fresh
+    // module instance. The extension is required — `./lib?t=…` does not resolve.
+    const { buildThemeFromObsidian } = await import(`./lib.ts?t=${Date.now()}`);
 
     const theme = buildThemeFromObsidian();
 
-    expect(theme.background).toBe("#282c34");
-    expect(theme.foreground).toBe("#abb2bf");
-    expect(theme.cursor).toBe("#61afef");
-    expect(theme.cursorAccent).toBe("#282c34");
-    expect(theme.selectionBackground).toBe("#3e4451");
-    expect(theme.black).toBe("#21252b");
-    expect(theme.red).toBe("#e06c75");
-    expect(theme.green).toBe("#98c379");
-    expect(theme.yellow).toBe("#e5c07b");
-    expect(theme.blue).toBe("#61afef");
-    expect(theme.magenta).toBe("#c678dd");
-    expect(theme.cyan).toBe("#56b6c2");
-    expect(theme.white).toBe("#abb2bf");
-    expect(theme.brightBlack).toBe("#5c6370");
-    expect(theme.brightWhite).toBe("#ffffff");
+    assert.strictEqual(theme.background, "#282c34");
+    assert.strictEqual(theme.foreground, "#abb2bf");
+    assert.strictEqual(theme.cursor, "#61afef");
+    assert.strictEqual(theme.cursorAccent, "#282c34");
+    assert.strictEqual(theme.selectionBackground, "#3e4451");
+    assert.strictEqual(theme.black, "#21252b");
+    assert.strictEqual(theme.red, "#e06c75");
+    assert.strictEqual(theme.green, "#98c379");
+    assert.strictEqual(theme.yellow, "#e5c07b");
+    assert.strictEqual(theme.blue, "#61afef");
+    assert.strictEqual(theme.magenta, "#c678dd");
+    assert.strictEqual(theme.cyan, "#56b6c2");
+    assert.strictEqual(theme.white, "#abb2bf");
+    assert.strictEqual(theme.brightBlack, "#5c6370");
+    assert.strictEqual(theme.brightWhite, "#ffffff");
   });
 
   it("falls back to defaults when CSS variables are empty", async () => {
-    const mockGetPropertyValue = mock(() => "");
+    const mockGetPropertyValue = mock.fn(() => "");
     globalThis.getComputedStyle = (() => ({
       getPropertyValue: mockGetPropertyValue,
     })) as any;
     globalThis.document = { body: {} } as any;
 
-    const { buildThemeFromObsidian } = await import(`./lib?t=${Date.now()}`);
+    const { buildThemeFromObsidian } = await import(`./lib.ts?t=${Date.now()}`);
 
     const theme = buildThemeFromObsidian();
 
-    expect(theme.background).toBe("#1e1e1e");
-    expect(theme.foreground).toBe("#d4d4d4");
-    expect(theme.cursor).toBe("#528bff");
-    expect(theme.selectionBackground).toBeUndefined();
-    expect(theme.black).toBe("#000000");
-    expect(theme.brightWhite).toBe("#ffffff");
+    assert.strictEqual(theme.background, "#1e1e1e");
+    assert.strictEqual(theme.foreground, "#d4d4d4");
+    assert.strictEqual(theme.cursor, "#528bff");
+    assert.strictEqual(theme.selectionBackground, undefined);
+    assert.strictEqual(theme.black, "#000000");
+    assert.strictEqual(theme.brightWhite, "#ffffff");
   });
 });

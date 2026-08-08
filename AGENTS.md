@@ -3,12 +3,18 @@
 This file provides guidance when working with code in this repository.
 
 ## Common commands
-- Install deps: `bun install`
-- Dev build: `bun run dev` (outputs `main.js` with sourcemaps + copies `ghostty-vt.wasm`)
-- Production build: `bun run build` (minified `main.js` + copies `ghostty-vt.wasm`)
-- Test: `bun test`
-- Requires **bun >= 1.3** — older bun (e.g. the 1.0.x that `mise`'s `bun/latest` may pin) silently ignores the text
-  `bun.lock`, resolves fresh from the registry and writes a `bun.lockb`, which makes `--frozen-lockfile` meaningless.
+Toolchain is [nub](https://nubjs.com/) (declared in `package.json#devEngines`); the lockfile is a standard
+`pnpm-lock.yaml`. There is no separate runtime — nub transpiles TS in memory and runs it on stock `node`, which is
+what Obsidian's Electron ships.
+- Install deps: `nub install`
+- Dev build: `nub run dev` (outputs `main.js` with sourcemaps + copies `ghostty-vt.wasm`)
+- Production build: `nub run build` (minified `main.js` + copies `ghostty-vt.wasm`)
+- Test: `nub run test` — Node's built-in `node:test`, no test-runner dependency. Must run through `nub`, not plain
+  `node`: the tests use extensionless imports (`./lib`), which only nub's augmented resolution handles.
+- `nub install` runs the root `postinstall` (see the node-pty note below). Note `--ignore-scripts` is not a clean
+  control: nub caches post-script state under `~/.cache/nub/pm/side-effects-v1` and replays it.
+- On a fresh clone, build before you test: `ghostty-vt.wasm` is gitignored and the `loadGhostty` test loads it from
+  the plugin root, so it only exists once a build has copied it there.
 
 ## Architecture overview
 - **Obsidian plugin entrypoint**: `main.ts` registers the view and command, resolves the plugin directory, spawns a PTY via node-pty, and renders the terminal using ghostty-web's WASM-powered canvas renderer. Build output is `main.js` (bundled by Vite).

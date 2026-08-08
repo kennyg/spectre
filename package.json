@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite build --mode development",
     "build": "vite build --mode production",
-    "test": "bun test",
+    "test": "nub --test 'src/**/*.test.ts'",
     "postinstall": "chmod +x node_modules/node-pty/prebuilds/darwin-*/spawn-helper 2>/dev/null || true"
   },
   "dependencies": {
@@ -19,5 +19,12 @@
     "obsidian": "^1.13.1",
     "typescript": "^5.9.3",
     "vite": "^8.2.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "nub",
+      "version": "^0.6.0",
+      "onFail": "warn"
+    }
   }
 }

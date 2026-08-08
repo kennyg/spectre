@@ -28,11 +28,10 @@ Embedded terminal view for Obsidian, powered by [ghostty-web](https://github.com
    git clone https://github.com/kennyg/obsidian-ghostty.git ghostty-terminal
    cd ghostty-terminal
    ```
-2. Install dependencies and build:
+2. Install dependencies and build ([nub](https://nubjs.com/)):
    ```bash
-   bun install
-   bun run build:pty:electron
-   bun run build
+   nub install
+   nub run build
    ```
 3. Enable "Ghostty terminal" in Obsidian → Settings → Community Plugins
 
@@ -40,20 +39,22 @@ Embedded terminal view for Obsidian, powered by [ghostty-web](https://github.com
 
 1. Install dependencies:
    ```bash
-   bun install
+   nub install
    ```
-2. Rebuild node-pty for Obsidian's Electron:
+2. Build the plugin:
    ```bash
-   bun run build:pty:electron
+   nub run dev
    ```
-3. Build the plugin:
-   ```bash
-   bun run dev
-   ```
-4. Symlink the plugin folder into your vault at `.obsidian/plugins/ghostty-terminal/` and enable it in Obsidian.
+3. Symlink the plugin folder into your vault at `.obsidian/plugins/ghostty-terminal/` and enable it in Obsidian.
 
 ## Production build
 
 ```bash
-bun run build
+nub run build
+```
+
+## Tests
+
+```bash
+nub run test
 ```
