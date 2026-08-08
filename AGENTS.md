@@ -2,6 +2,17 @@
 
 This file provides guidance when working with code in this repository.
 
+## Naming
+
+The plugin is **Spectre** (manifest id `spectre`, repo `kennyg/obsidian-spectre`). Renamed from
+`ghostty-terminal` in August 2026: that id collided with a different published community plugin, and the project
+shares no implementation with the upstream it originally forked from — see the README's Origin section.
+
+Do not "tidy up" the remaining `ghostty` identifiers. They name the real dependency and must stay: the `ghostty-web`
+package, the `ghostty-vt.wasm` artifact, and the `loadGhostty` helper. Only the plugin's own identity — manifest id
+and name, view type `spectre-terminal-view`, `.spectre-terminal-*` CSS classes, icon id `spectre-logo` — carries the
+Spectre name.
+
 ## Common commands
 Toolchain is [nub](https://nubjs.com/) (declared in `package.json#devEngines`); the lockfile is a standard
 `pnpm-lock.yaml`. There is no separate runtime — nub transpiles TS in memory and runs it on stock `node`, which is

@@ -1,4 +1,4 @@
-.ghostty-terminal-view {
+.spectre-terminal-view {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -6,7 +6,7 @@
   min-height: 0;
 }
 
-.ghostty-terminal-container {
+.spectre-terminal-container {
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -14,7 +14,7 @@
 }
 
 /* Hide ghostty-web's internal textarea used for keyboard capture */
-.ghostty-terminal-container textarea {
+.spectre-terminal-container textarea {
   position: absolute !important;
   left: -9999px !important;
   width: 1px !important;
@@ -23,7 +23,7 @@
   pointer-events: none !important;
 }
 
-.ghostty-terminal-placeholder {
+.spectre-terminal-placeholder {
   font-size: 13px;
   color: var(--text-muted);
 }

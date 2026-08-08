@@ -5,10 +5,10 @@ import type { IPty } from "node-pty";
 import { Terminal, FitAddon } from "ghostty-web";
 import { loadGhostty, buildThemeFromObsidian } from "./lib";
 
-const VIEW_TYPE_GHOSTTY = "ghostty-terminal-view";
-const GHOSTTY_ICON_ID = "ghostty-logo";
+const VIEW_TYPE_SPECTRE = "spectre-terminal-view";
+const SPECTRE_ICON_ID = "spectre-logo";
 
-const GHOSTTY_ICON_SVG =
+const SPECTRE_ICON_SVG =
   `<g transform="translate(13.5, 0) scale(3.7)">` +
   `<path d="M20.3955 32C19.1436 32 17.9152 31.6249 16.879 30.9333C15.8428 31.6249 14.6121 32 13.3625 32C12.113 32 10.8822 31.6249 9.84606 30.9333C8.8169 31.6249 7.62598 31.9906 6.37177 32H6.33426C4.63228 32 3.0358 31.3225 1.83316 30.0941C0.64928 28.8844 -0.00244141 27.2926 -0.00244141 25.6117V13.3626C-9.70841e-05 5.99443 5.99433 0 13.3625 0C20.7307 0 26.7252 5.99443 26.7252 13.3626V25.6164C26.7252 29.0086 24.0995 31.8078 20.7472 31.9906C20.6299 31.9977 20.5127 32 20.3955 32Z" fill="currentColor"/>` +
   `<path d="M23.9119 13.3627V25.6165C23.9119 27.4919 22.4654 29.079 20.5923 29.1822C19.6827 29.2314 18.8435 28.936 18.1941 28.4132C17.4158 27.7873 16.321 27.8154 15.5356 28.4343C14.9378 28.9055 14.183 29.1869 13.3601 29.1869C12.5372 29.1869 11.7847 28.9055 11.1869 28.4343C10.3922 27.8084 9.29738 27.8084 8.50266 28.4343C7.90954 28.9009 7.16405 29.1822 6.35291 29.1869C4.40478 29.2009 2.81299 27.5599 2.81299 25.6118V13.3627C2.81299 7.53704 7.5368 2.81323 13.3624 2.81323C19.1881 2.81323 23.9119 7.53704 23.9119 13.3627Z" fill="var(--background-primary)"/>` +
@@ -16,33 +16,33 @@ const GHOSTTY_ICON_SVG =
   `<path d="M20.1822 12.2913H15.0176C14.4269 12.2913 13.9463 12.7695 13.9463 13.3626C13.9463 13.9557 14.4245 14.434 15.0176 14.434H20.1822C20.773 14.434 21.2535 13.9557 21.2535 13.3626C21.2535 12.7695 20.7753 12.2913 20.1822 12.2913Z" fill="currentColor"/>` +
   `</g>`;
 
-class GhosttyTerminalView extends ItemView {
+class SpectreTerminalView extends ItemView {
   private pty: IPty | null = null;
   private term: Terminal | null = null;
   private fitAddon: FitAddon | null = null;
   private disposables: { dispose(): void }[] = [];
   private title: string = "";
 
-  constructor(leaf: WorkspaceLeaf, private plugin: GhosttyPlugin) {
+  constructor(leaf: WorkspaceLeaf, private plugin: SpectrePlugin) {
     super(leaf);
   }
 
   getViewType(): string {
-    return VIEW_TYPE_GHOSTTY;
+    return VIEW_TYPE_SPECTRE;
   }
 
   getDisplayText(): string {
-    return this.title || "Ghostty terminal";
+    return this.title || "Spectre";
   }
 
   getIcon(): string {
-    return GHOSTTY_ICON_ID;
+    return SPECTRE_ICON_ID;
   }
 
   async onOpen(): Promise<void> {
     const { contentEl } = this;
     contentEl.empty();
-    contentEl.addClass("ghostty-terminal-view");
+    contentEl.addClass("spectre-terminal-view");
 
     // Add "+" button to the view header for new tabs
     this.addAction("plus", "New terminal tab", () => {
@@ -54,7 +54,7 @@ class GhosttyTerminalView extends ItemView {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       contentEl.createEl("div", {
-        cls: "ghostty-terminal-placeholder",
+        cls: "spectre-terminal-placeholder",
         text: `Failed to start terminal: ${message}`,
       });
     }
@@ -97,7 +97,7 @@ class GhosttyTerminalView extends ItemView {
 
     // 4. Mount to DOM
     const container = contentEl.createEl("div", {
-      cls: "ghostty-terminal-container",
+      cls: "spectre-terminal-container",
     });
     this.term.open(container);
 
@@ -123,7 +123,7 @@ class GhosttyTerminalView extends ItemView {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       contentEl.createEl("div", {
-        cls: "ghostty-terminal-placeholder",
+        cls: "spectre-terminal-placeholder",
         text: `Failed to load node-pty: ${message}`,
       });
       return;
@@ -202,19 +202,19 @@ class GhosttyTerminalView extends ItemView {
   }
 }
 
-export default class GhosttyPlugin extends Plugin {
-  private views: Set<GhosttyTerminalView> = new Set();
+export default class SpectrePlugin extends Plugin {
+  private views: Set<SpectreTerminalView> = new Set();
 
   async onload(): Promise<void> {
-    addIcon(GHOSTTY_ICON_ID, GHOSTTY_ICON_SVG);
+    addIcon(SPECTRE_ICON_ID, SPECTRE_ICON_SVG);
 
-    this.registerView(VIEW_TYPE_GHOSTTY, (leaf: WorkspaceLeaf) => {
-      const view = new GhosttyTerminalView(leaf, this);
+    this.registerView(VIEW_TYPE_SPECTRE, (leaf: WorkspaceLeaf) => {
+      const view = new SpectreTerminalView(leaf, this);
       this.views.add(view);
       return view;
     });
 
-    this.addRibbonIcon(GHOSTTY_ICON_ID, "Ghostty terminal", () => {
+    this.addRibbonIcon(SPECTRE_ICON_ID, "Spectre", () => {
       this.activateView().catch(console.error);
     });
 
@@ -280,21 +280,21 @@ export default class GhosttyPlugin extends Plugin {
   }
 
   /** Remove a view from tracking (called implicitly when view closes). */
-  untrackView(view: GhosttyTerminalView): void {
+  untrackView(view: SpectreTerminalView): void {
     this.views.delete(view);
   }
 
   private async revealAndFocus(leaf: WorkspaceLeaf): Promise<void> {
     await this.app.workspace.revealLeaf(leaf);
     const view = leaf.view;
-    if (view instanceof GhosttyTerminalView) {
+    if (view instanceof SpectreTerminalView) {
       view.focusInput();
     }
   }
 
   private async toggleView(): Promise<void> {
     const { workspace } = this.app;
-    const existingLeaves = workspace.getLeavesOfType(VIEW_TYPE_GHOSTTY);
+    const existingLeaves = workspace.getLeavesOfType(VIEW_TYPE_SPECTRE);
 
     if (existingLeaves.length > 0) {
       const leaf = existingLeaves[0];
@@ -310,7 +310,7 @@ export default class GhosttyPlugin extends Plugin {
   }
 
   private async newTerminal(): Promise<void> {
-    const existing = this.app.workspace.getLeavesOfType(VIEW_TYPE_GHOSTTY);
+    const existing = this.app.workspace.getLeavesOfType(VIEW_TYPE_SPECTRE);
     if (existing.length > 0) {
       await this.newTerminalTab(existing[0]);
     } else {
@@ -320,19 +320,19 @@ export default class GhosttyPlugin extends Plugin {
 
   async newTerminalTab(siblingLeaf: WorkspaceLeaf): Promise<void> {
     const leaf = this.app.workspace.createLeafBySplit(siblingLeaf, "vertical", false);
-    await leaf.setViewState({ type: VIEW_TYPE_GHOSTTY, active: true });
+    await leaf.setViewState({ type: VIEW_TYPE_SPECTRE, active: true });
     await this.revealAndFocus(leaf);
   }
 
   private getFocusedTerminalLeaf(): WorkspaceLeaf | null {
-    const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_GHOSTTY);
+    const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_SPECTRE);
     return leaves.find((l) =>
       l.view.containerEl.contains(document.activeElement)
     ) ?? null;
   }
 
   private cycleTerminal(direction: 1 | -1): void {
-    const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_GHOSTTY);
+    const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_SPECTRE);
     if (leaves.length < 2) return;
 
     const currentIndex = leaves.findIndex((l) =>
@@ -346,7 +346,7 @@ export default class GhosttyPlugin extends Plugin {
 
   private async activateView(): Promise<void> {
     const { workspace } = this.app;
-    const existingLeaves = workspace.getLeavesOfType(VIEW_TYPE_GHOSTTY);
+    const existingLeaves = workspace.getLeavesOfType(VIEW_TYPE_SPECTRE);
 
     if (existingLeaves.length > 0) {
       await this.revealAndFocus(existingLeaves[0]);
@@ -354,7 +354,7 @@ export default class GhosttyPlugin extends Plugin {
     }
 
     const leaf = workspace.getLeaf("split", "horizontal");
-    await leaf.setViewState({ type: VIEW_TYPE_GHOSTTY, active: true });
+    await leaf.setViewState({ type: VIEW_TYPE_SPECTRE, active: true });
     await this.revealAndFocus(leaf);
   }
 

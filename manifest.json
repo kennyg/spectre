@@ -1,9 +1,9 @@
 {
-  "id": "ghostty-terminal",
-  "name": "Ghostty terminal",
+  "id": "spectre",
+  "name": "Spectre",
   "version": "0.1.0",
   "minAppVersion": "1.7.2",
-  "description": "Embedded terminal view powered by ghostty-web (WASM). Unofficial.",
+  "description": "Embedded terminal view for Obsidian, rendered with ghostty-web (WASM). Unofficial; not affiliated with the Ghostty project.",
   "author": "Kenny Gatdula",
   "authorUrl": "https://github.com/kennyg",
   "isDesktopOnly": true

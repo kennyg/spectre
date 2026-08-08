@@ -1,7 +1,7 @@
 {
-  "name": "obsidian-ghostty",
+  "name": "obsidian-spectre",
   "version": "0.1.0",
-  "description": "Ghostty-powered terminal view for Obsidian",
+  "description": "Spectre - embedded terminal view for Obsidian, rendered with ghostty-web",
   "type": "module",
   "main": "main.js",
   "scripts": {
