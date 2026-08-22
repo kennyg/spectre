@@ -9,7 +9,7 @@
     "build": "nub run wasm && vite build --mode production",
     "wasm": "node scripts/fetch-wasm.mjs",
     "wasm:keys": "node scripts/gen-keys.mjs",
-    "test": "nub run wasm && nub --test 'src/**/*.test.ts'",
+    "test": "nub run wasm && nub --test 'src/**/*.test.ts' 'scripts/**/*.test.mjs'",
     "lint": "oxlint",
     "typecheck": "tsc --noEmit",
     "postinstall": "chmod +x node_modules/node-pty/prebuilds/darwin-*/spawn-helper 2>/dev/null || true",

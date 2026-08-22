@@ -8,6 +8,7 @@
   "bytes": 920233,
   "minisign": {
     "publicKey": "RWQlAjJC23149WL2sEpT/l0QKy7hMIFhYdQOFy0Z7z7PbneUgvlsnYcV",
-    "signature": "https://github.com/ghostty-org/ghostty/releases/download/tip/ghostty-vt.wasm.minisig"
+    "signature": "untrusted comment: signature from minisign secret key\nRUQlAjJC23149T2KW0fGdvZI0xe6WkkCprrtiavv7r9rJHbw01A3WdCucrzegXciULvx1Cegwc/Bi2qSc2fwBTT1FPHHsWE6kwk=\ntrusted comment: timestamp:1787390832\tfile:ghostty-vt.wasm\thashed\nwPIhkJ90Lo6a0XAV+lDiPiHjfU+n9dM576sP0bKurAtGOV1sxiE0dy4zOc+ZrD0pe3MqRZ6VO+ky3d77zU6OBw==\n",
+    "trustedComment": "timestamp:1787390832\tfile:ghostty-vt.wasm\thashed"
   }
 }

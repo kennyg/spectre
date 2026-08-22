@@ -15,14 +15,8 @@ affiliated with the Ghostty project.
 
 ## Installation
 
-### Using BRAT (recommended)
-
-1. Install the [BRAT](https://github.com/TfTHacker/obsidian42-brat) community plugin
-2. Open BRAT settings → **Add Beta Plugin**
-3. Enter: `kennyg/spectre`
-4. Enable "Spectre" in Community Plugins
-
-### Manual
+Build from source. There is no one-click install, and that is a deliberate
+consequence of what this plugin is — see [Why not BRAT?](#why-not-brat) below.
 
 1. Clone this repo into your vault's plugin directory:
    ```bash
@@ -39,6 +33,27 @@ affiliated with the Ghostty project.
    build needs network access.
 3. Enable "Spectre" in Obsidian → Settings → Community Plugins
 
+### Why not BRAT?
+
+BRAT — and the Obsidian community plugin store — install exactly three files:
+`main.js`, `manifest.json` and `styles.css`. Spectre needs two more at runtime:
+
+- `ghostty-vt.wasm`, the terminal engine (~900 KB)
+- `node-pty`'s native addon, which is what allocates the pseudo-terminal
+
+Without a pseudo-terminal a shell reports `isatty() == false` and no window
+size, so there is no prompt, no resize, and no `vim` or `htop`. The addon is
+platform-specific compiled code, so it cannot be bundled into `main.js`.
+
+Delivering a native binary through a plugin installer would mean writing an
+executable into your vault at runtime and loading it with full process
+privileges — in a directory that is often cloud-synced and writable by other
+plugins. Building from source avoids that entirely: you get the binary from
+npm with a lockfile integrity check, on your own machine.
+
+Spectre also spawns your shell with your privileges. It is worth reading before
+you run it, and building from source makes that the natural thing to do.
+
 ## Development
 
 1. Install dependencies:
@@ -49,7 +64,29 @@ affiliated with the Ghostty project.
    ```bash
    nub run dev
    ```
-3. Symlink the plugin folder into your vault at `.obsidian/plugins/spectre/` and enable it in Obsidian.
+3. Link it into a vault. For a throwaway vault to test against:
+   ```bash
+   nub run vault          # creates dev/vault with this repo linked in
+   nub run vault -- --open
+   ```
+   For your own vault, symlink the repo to `.obsidian/plugins/spectre/` and
+   enable it in Obsidian. Either way, `Cmd/Ctrl+R` reloads after a rebuild.
+
+## Verifying the engine
+
+`ghostty-vt.wasm` is pinned by commit and SHA-256 in `ghostty-vt.pin.json` and
+fetched from ghostty-org's commit-addressed CDN. `nub run wasm` checks the
+checksum and the minisign signature — made by Ghostty's release key, recorded
+in the pin — on every build, so a tampered or substituted artifact fails before
+it is ever loaded.
+
+To repin to a newer engine:
+
+```bash
+node scripts/fetch-wasm.mjs --update <ghostty-commit-sha>
+nub run wasm:keys
+nub run test
+```
 
 ## Production build
 

@@ -13,6 +13,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync, existsSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { verifyMinisign } from "./minisign.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pinPath = join(root, "ghostty-vt.pin.json");
@@ -71,6 +72,26 @@ async function update(commit) {
   const buf = await download(url);
   assertUsableModule(buf);
 
+  // Signatures are published only on the rolling `tip` release, never on the
+  // commit-addressed CDN, so they can only be checked while the pin still
+  // matches tip. Verify now and record the signature in the pin, which keeps
+  // the artifact re-verifiable offline afterwards.
+  const sigUrl = `https://github.com/ghostty-org/ghostty/releases/download/tip/${pin.variant}.minisig`;
+  let signature = null;
+  let trustedComment = null;
+  try {
+    signature = (await download(sigUrl)).toString("utf8");
+    trustedComment = verifyMinisign(buf, signature, pin.minisign.publicKey);
+    process.stdout.write(`  signature verified (${trustedComment})\n`);
+  } catch (err) {
+    throw new Error(
+      `could not verify the minisign signature: ${err.message}\n` +
+        `  The signature on the tip release only matches while the pinned commit\n` +
+        `  is tip. Repin to the current tip if you need a signed artifact.`,
+      { cause: err },
+    );
+  }
+
   const next = {
     ...pin,
     commit,
@@ -78,10 +99,23 @@ async function update(commit) {
     url,
     sha256: sha256(buf),
     bytes: buf.byteLength,
+    minisign: { ...pin.minisign, signature, trustedComment },
   };
   writeFileSync(pinPath, `${JSON.stringify(next, null, 2)}\n`);
   writeFileSync(join(root, pin.variant), buf);
   process.stdout.write(`  repinned to ${commit} (${buf.byteLength} bytes)\n`);
+}
+
+/**
+ * Re-check the signature recorded in the pin. Offline, and it means a pin
+ * edited by hand cannot quietly point at an unsigned artifact.
+ */
+function verifyRecordedSignature(pin, buf) {
+  if (!pin.minisign?.signature) {
+    process.stdout.write("  warning: pin carries no signature; checksum only\n");
+    return;
+  }
+  verifyMinisign(buf, pin.minisign.signature, pin.minisign.publicKey);
 }
 
 async function ensure({ force }) {
@@ -89,8 +123,9 @@ async function ensure({ force }) {
   const dest = join(root, pin.variant);
 
   if (!force && existsSync(dest) && statSync(dest).size === pin.bytes) {
-    const have = sha256(readFileSync(dest));
-    if (have === pin.sha256) {
+    const cached = readFileSync(dest);
+    if (sha256(cached) === pin.sha256) {
+      verifyRecordedSignature(pin, cached);
       process.stdout.write(`  ${pin.variant} verified (${pin.commit.slice(0, 12)})\n`);
       return;
     }
@@ -109,6 +144,7 @@ async function ensure({ force }) {
     throw new Error(`size mismatch: expected ${pin.bytes}, got ${buf.byteLength}`);
   }
   assertUsableModule(buf);
+  verifyRecordedSignature(pin, buf);
 
   writeFileSync(dest, buf);
   process.stdout.write(`  ${pin.variant} downloaded and verified (${pin.commit.slice(0, 12)})\n`);
