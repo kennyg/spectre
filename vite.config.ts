@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import { builtinModules } from "module";
-import { copyFileSync } from "fs";
+import { copyFileSync, existsSync } from "fs";
 import { resolve } from "path";
 
 export default defineConfig(({ mode }) => {
@@ -34,11 +34,13 @@ export default defineConfig(({ mode }) => {
         name: "post-build",
         closeBundle() {
           copyFileSync(resolve(__dirname, "dist", "main.js"), resolve(__dirname, "main.js"));
-          copyFileSync(
-            resolve(__dirname, "node_modules", "ghostty-web", "ghostty-vt.wasm"),
-            resolve(__dirname, "ghostty-vt.wasm"),
-          );
-          console.log("  Copied main.js and ghostty-vt.wasm to plugin root");
+          // ghostty-vt.wasm is fetched to the plugin root by scripts/fetch-wasm.mjs
+          // (the `wasm` script, which `dev` and `build` run first), so there is
+          // nothing to copy — just confirm the pinned artifact is in place.
+          if (!existsSync(resolve(__dirname, "ghostty-vt.wasm"))) {
+            throw new Error("ghostty-vt.wasm is missing — run `nub run wasm`");
+          }
+          console.log("  Copied main.js to plugin root (ghostty-vt.wasm already pinned)");
         },
       },
     ],

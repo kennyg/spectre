@@ -2,7 +2,7 @@ import { existsSync } from "fs";
 import { join } from "path";
 import { addIcon, ItemView, Plugin, WorkspaceLeaf } from "obsidian";
 import type { IPty } from "node-pty";
-import { Terminal, FitAddon } from "ghostty-web";
+import { Terminal } from "./terminal";
 import { loadGhostty, buildThemeFromObsidian } from "./lib";
 
 const VIEW_TYPE_SPECTRE = "spectre-terminal-view";
@@ -19,7 +19,6 @@ const SPECTRE_ICON_SVG =
 class SpectreTerminalView extends ItemView {
   private pty: IPty | null = null;
   private term: Terminal | null = null;
-  private fitAddon: FitAddon | null = null;
   private disposables: { dispose(): void }[] = [];
   private title: string = "";
 
@@ -66,10 +65,9 @@ class SpectreTerminalView extends ItemView {
     this.contentEl.empty();
   }
 
-  /** Re-read Obsidian CSS vars and push them into the terminal renderer. */
+  /** Re-read Obsidian CSS vars and push them into the terminal. */
   syncTheme(): void {
-    if (!this.term?.renderer) return;
-    this.term.renderer.setTheme(buildThemeFromObsidian());
+    this.term?.setTheme(buildThemeFromObsidian());
   }
 
   private async startSession(): Promise<void> {
@@ -91,31 +89,27 @@ class SpectreTerminalView extends ItemView {
       theme: buildThemeFromObsidian(),
     });
 
-    // 3. Load FitAddon for auto-resize
-    this.fitAddon = new FitAddon();
-    this.term.loadAddon(this.fitAddon);
-
-    // 4. Mount to DOM
+    // 3. Mount to DOM
     const container = contentEl.createEl("div", {
       cls: "spectre-terminal-container",
     });
     this.term.open(container);
 
-    // 4b. Stop keyboard events from bubbling to Obsidian's hotkey system.
+    // 3b. Stop keyboard events from bubbling to Obsidian's hotkey system.
     container.addEventListener("keydown", (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "j") return;
       e.stopPropagation();
     });
 
-    // 5. Fit terminal to container after DOM layout.
+    // 4. Fit terminal to container after DOM layout.
     // NOTE: requestAnimationFrame does not fire while the window is hidden, so a terminal
     // opened in a background window waits here — and the PTY below is not spawned until
     // the window is shown. That is intentional laziness, not a hang.
     await new Promise<void>((resolve) => {
       requestAnimationFrame(() => resolve());
     });
-    this.fitAddon.fit();
-    this.fitAddon.observeResize();
+    this.term.fit();
+    this.term.observeResize();
 
     // 6. Spawn PTY
     let spawnPty: typeof import("node-pty").spawn;
@@ -143,10 +137,11 @@ class SpectreTerminalView extends ItemView {
     const cwd: string =
       adapter.getBasePath?.() || process.env.HOME || process.cwd() || "/";
 
+    const { cols, rows } = this.term.dimensions;
     this.pty = spawnPty(shell, [], {
       name: "xterm-256color",
-      cols: this.term.cols,
-      rows: this.term.rows,
+      cols,
+      rows,
       cwd,
       env: process.env as Record<string, string>,
     });
@@ -154,21 +149,29 @@ class SpectreTerminalView extends ItemView {
     this.title = cwd;
     (this.leaf as any).updateHeader?.();
 
+    const decoder = new TextDecoder();
     this.disposables.push(
       this.pty.onData((data) => this.term?.write(data)),
-      this.term.onData((data) => this.pty?.write(data)),
-      this.term.onResize(({ cols, rows }) => {
+      // Keystrokes and the terminal's own query replies both arrive here.
+      this.term.onData((data) => this.pty?.write(decoder.decode(data))),
+      this.term.onResize(({ cols: c, rows: r }) => {
         try {
-          this.pty?.resize(cols, rows);
+          this.pty?.resize(c, r);
         } catch {
           // ignore resize errors on dead PTY
         }
+      }),
+      // OSC 0/2 retitles the tab, so a shell integration that reports the cwd
+      // or running command shows up in the Obsidian tab header.
+      this.term.onTitleChange((title) => {
+        if (!title) return;
+        this.title = title;
+        (this.leaf as any).updateHeader?.();
       })
     );
 
-    // 9. Handle Cmd/Ctrl+J to close terminal
-    // NOTE: ghostty-web has inverted semantics from xterm.js —
-    // return true = "I consumed this, skip it", false = "let terminal handle it"
+    // 7. Handle Cmd/Ctrl+J to close terminal.
+    // Returning true means "consumed — do not send to the terminal".
     this.term.attachCustomKeyEventHandler((event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "j") {
         if (event.type === "keydown") {
@@ -179,16 +182,13 @@ class SpectreTerminalView extends ItemView {
       return false; // not consumed — let terminal process normally
     });
 
-    // 10. Focus terminal
+    // 8. Focus terminal
     this.term.focus();
   }
 
   private stopSession(): void {
     for (const d of this.disposables) d.dispose();
     this.disposables = [];
-
-    this.fitAddon?.dispose();
-    this.fitAddon = null;
 
     if (this.pty) {
       try {

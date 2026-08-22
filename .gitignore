@@ -5,3 +5,11 @@ main.js
 ghostty-vt.wasm
 *.log
 .DS_Store
+
+# Code wiki and the index it is built from — both generated from the source
+# tree by the code-ingest skill, so they are reproducible rather than authored.
+.codegraph/
+Wiki/
+
+# Dev-only Obsidian vault created by scripts/make-vault.mjs
+dev/vault/

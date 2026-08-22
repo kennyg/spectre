@@ -6,7 +6,21 @@
     "perf": "error"
   },
   "rules": {
-    "no-promise-executor-return": "error"
+    "no-promise-executor-return": "error",
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allow": [
+          "__indirect_function_table",
+          "__term",
+          "__ghostty"
+        ]
+      }
+    ]
   },
-  "ignorePatterns": ["dist", "main.js", "node_modules"]
+  "ignorePatterns": [
+    "dist",
+    "main.js",
+    "node_modules"
+  ]
 }

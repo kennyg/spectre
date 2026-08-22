@@ -3,15 +3,15 @@ import assert from "node:assert/strict";
 import { join } from "path";
 
 describe("loadGhostty", () => {
-  it("loads the real WASM and returns a Ghostty instance", async () => {
+  it("loads the pinned artifact from the plugin root", async () => {
     const { loadGhostty } = await import("./lib");
     const wasmPath = join(import.meta.dirname, "..", "ghostty-vt.wasm");
 
     const ghostty = await loadGhostty(wasmPath);
 
-    assert.notStrictEqual(ghostty, undefined);
-    assert.strictEqual(typeof ghostty.createTerminal, "function");
-    assert.strictEqual(typeof ghostty.createKeyEncoder, "function");
+    assert.ok(ghostty.exports.memory instanceof WebAssembly.Memory);
+    assert.ok(ghostty.sizeOf("GhosttyStyle") > 0);
+    assert.strictEqual(typeof ghostty.fn("ghostty_terminal_new"), "function");
   });
 });
 

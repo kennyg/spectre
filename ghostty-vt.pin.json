@@ -1,0 +1,13 @@
+{
+  "_comment": "Pin for the official libghostty-vt WebAssembly artifact. Ghostty publishes wasm only from the rolling `tip` release, whose GitHub assets are overwritten on every push to main. The immutable pin is the commit-addressed R2 URL below, which is byte-identical to the release asset. Update with scripts/fetch-wasm.mjs --update <commit>.",
+  "commit": "5851d98615187d85052e41042bcf66e0ccec11d4",
+  "version": "libghostty-vt@5851d98",
+  "variant": "ghostty-vt.wasm",
+  "url": "https://tip.files.ghostty.org/5851d98615187d85052e41042bcf66e0ccec11d4/ghostty-vt.wasm",
+  "sha256": "3e3211c9925c5fbbca85634a29c5a7bd4374c7d72b38c3eab5793493801bb5cf",
+  "bytes": 920233,
+  "minisign": {
+    "publicKey": "RWQlAjJC23149WL2sEpT/l0QKy7hMIFhYdQOFy0Z7z7PbneUgvlsnYcV",
+    "signature": "https://github.com/ghostty-org/ghostty/releases/download/tip/ghostty-vt.wasm.minisig"
+  }
+}

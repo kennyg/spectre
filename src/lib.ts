@@ -1,30 +1,20 @@
 import { readFileSync } from "fs";
-import { Ghostty } from "ghostty-web";
-import type { ITheme } from "ghostty-web";
+import { GhosttyModule } from "./vt/wasm";
+import type { ITheme } from "./theme";
+
+export type { ITheme } from "./theme";
 
 /**
- * Load Ghostty WASM directly with readFileSync.
- * ghostty-web's Ghostty.load() uses `await import('fs/promises')` which
- * breaks when esbuild bundles to CJS (Obsidian requires CJS output).
+ * Load the official libghostty-vt WebAssembly artifact from disk.
+ *
+ * The artifact is built wasm32-freestanding and declares no imports, so this
+ * is just read-compile-instantiate — there is no glue to keep in sync with a
+ * build of the module.
  */
-export async function loadGhostty(wasmPath: string): Promise<Ghostty> {
+export async function loadGhostty(wasmPath: string): Promise<GhosttyModule> {
   const buf = readFileSync(wasmPath);
-  const wasmBytes = buf.buffer.slice(
-    buf.byteOffset,
-    buf.byteOffset + buf.byteLength
-  );
-  const wasmModule = await WebAssembly.compile(wasmBytes);
-  let memory: WebAssembly.Memory;
-  const wasmInstance = await WebAssembly.instantiate(wasmModule, {
-    env: {
-      log: (ptr: number, len: number) => {
-        const bytes = new Uint8Array(memory.buffer, ptr, len);
-        console.log("[ghostty-vt]", new TextDecoder().decode(bytes));
-      },
-    },
-  });
-  memory = (wasmInstance.exports as { memory: WebAssembly.Memory }).memory;
-  return new Ghostty(wasmInstance);
+  const bytes = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+  return GhosttyModule.instantiate(bytes);
 }
 
 /**
@@ -35,7 +25,7 @@ export function getCssVar(name: string): string {
 }
 
 /**
- * Build a ghostty-web ITheme from Obsidian's current CSS variables.
+ * Build a terminal theme from Obsidian's current CSS variables.
  */
 export function buildThemeFromObsidian(): ITheme {
   return {

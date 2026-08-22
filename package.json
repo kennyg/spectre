@@ -1,19 +1,22 @@
 {
   "name": "obsidian-spectre",
   "version": "0.1.0",
-  "description": "Spectre - embedded terminal view for Obsidian, rendered with ghostty-web",
+  "description": "Spectre - embedded terminal view for Obsidian, rendered with libghostty-vt (WASM)",
   "type": "module",
   "main": "main.js",
   "scripts": {
-    "dev": "vite build --mode development",
-    "build": "vite build --mode production",
-    "test": "nub --test 'src/**/*.test.ts'",
+    "dev": "nub run wasm && vite build --mode development",
+    "build": "nub run wasm && vite build --mode production",
+    "wasm": "node scripts/fetch-wasm.mjs",
+    "wasm:keys": "node scripts/gen-keys.mjs",
+    "test": "nub run wasm && nub --test 'src/**/*.test.ts'",
     "lint": "oxlint",
     "typecheck": "tsc --noEmit",
-    "postinstall": "chmod +x node_modules/node-pty/prebuilds/darwin-*/spawn-helper 2>/dev/null || true"
+    "postinstall": "chmod +x node_modules/node-pty/prebuilds/darwin-*/spawn-helper 2>/dev/null || true",
+    "harness": "vite --config dev/vite.config.ts",
+    "vault": "node scripts/make-vault.mjs"
   },
   "dependencies": {
-    "ghostty-web": "^0.4.0",
     "node-pty": "^1.1.0"
   },
   "devDependencies": {

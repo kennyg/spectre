@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Spectre terminal harness</title>
+    <style>
+      :root {
+        --background-primary: #282c34;
+        --text-normal: #abb2bf;
+        --text-accent: #61afef;
+        --text-selection: #3e4451;
+        --color-base-00: #21252b;
+        --color-base-50: #5c6370;
+        --color-base-70: #abb2bf;
+        --color-base-100: #ffffff;
+        --color-red: #e06c75;
+        --color-green: #98c379;
+        --color-yellow: #e5c07b;
+        --color-blue: #61afef;
+        --color-purple: #c678dd;
+        --color-cyan: #56b6c2;
+      }
+      body {
+        margin: 0;
+        background: #1a1d23;
+        color: #abb2bf;
+        font: 13px/1.5 system-ui, sans-serif;
+      }
+      header { padding: 8px 12px; display: flex; gap: 12px; align-items: center; }
+      #status { color: #98c379; }
+      #host {
+        width: 900px;
+        height: 420px;
+        margin: 0 12px;
+        background: var(--background-primary);
+        overflow: hidden;
+      }
+      button { font: inherit; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <strong>Spectre harness</strong>
+      <span id="status">booting…</span>
+      <span id="size"></span>
+      <button id="demo">replay demo</button>
+      <button id="selftest">run self-test</button>
+    </header>
+    <div id="host"></div>
+    <pre id="results" style="margin:12px;color:#7f8794"></pre>
+    <script type="module" src="/dev/harness.ts"></script>
+  </body>
+</html>
