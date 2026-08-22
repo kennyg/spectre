@@ -19,7 +19,7 @@ affiliated with the Ghostty project.
 
 1. Install the [BRAT](https://github.com/TfTHacker/obsidian42-brat) community plugin
 2. Open BRAT settings → **Add Beta Plugin**
-3. Enter: `kennyg/obsidian-spectre`
+3. Enter: `kennyg/spectre`
 4. Enable "Spectre" in Community Plugins
 
 ### Manual
@@ -27,7 +27,7 @@ affiliated with the Ghostty project.
 1. Clone this repo into your vault's plugin directory:
    ```bash
    cd /path/to/vault/.obsidian/plugins
-   git clone https://github.com/kennyg/obsidian-spectre.git spectre
+   git clone https://github.com/kennyg/spectre.git spectre
    cd spectre
    ```
 2. Install dependencies and build ([nub](https://nubjs.com/)):

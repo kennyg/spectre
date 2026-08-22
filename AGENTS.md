@@ -4,7 +4,7 @@ This file provides guidance when working with code in this repository.
 
 ## Naming
 
-The plugin is **Spectre** (manifest id `spectre`, repo `kennyg/obsidian-spectre`). Renamed from
+The plugin is **Spectre** (manifest id `spectre`, repo `kennyg/spectre`). Renamed from
 `ghostty-terminal` in August 2026: that id collided with a different published community plugin, and the project
 shares no implementation with the upstream it originally forked from — see the README's Origin section.
 
