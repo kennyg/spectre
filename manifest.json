@@ -1,7 +1,7 @@
 {
   "id": "spectre",
   "name": "Spectre",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "minAppVersion": "1.7.2",
   "description": "Embedded terminal view for Obsidian, powered by libghostty-vt (WASM). Unofficial; not affiliated with the Ghostty project.",
   "author": "Kenny Gatdula",
