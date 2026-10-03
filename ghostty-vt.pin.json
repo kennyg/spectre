@@ -1,14 +1,14 @@
 {
   "_comment": "Pin for the official libghostty-vt WebAssembly artifact. Ghostty publishes wasm only from the rolling `tip` release, whose GitHub assets are overwritten on every push to main. The immutable pin is the commit-addressed R2 URL below, which is byte-identical to the release asset. Update with scripts/fetch-wasm.mjs --update <commit>.",
-  "commit": "5851d98615187d85052e41042bcf66e0ccec11d4",
-  "version": "libghostty-vt@5851d98",
+  "commit": "f523504ea5c9f41d150d1eb93cc7a748b90f9361",
+  "version": "libghostty-vt@f523504",
   "variant": "ghostty-vt.wasm",
-  "url": "https://tip.files.ghostty.org/5851d98615187d85052e41042bcf66e0ccec11d4/ghostty-vt.wasm",
-  "sha256": "3e3211c9925c5fbbca85634a29c5a7bd4374c7d72b38c3eab5793493801bb5cf",
-  "bytes": 920233,
+  "url": "https://tip.files.ghostty.org/f523504ea5c9f41d150d1eb93cc7a748b90f9361/ghostty-vt.wasm",
+  "sha256": "1ff4421b6acedd746b8d2038684507ce5c80dcd27a65edb1462652436cff64d5",
+  "bytes": 1022017,
   "minisign": {
     "publicKey": "RWQlAjJC23149WL2sEpT/l0QKy7hMIFhYdQOFy0Z7z7PbneUgvlsnYcV",
-    "signature": "untrusted comment: signature from minisign secret key\nRUQlAjJC23149T2KW0fGdvZI0xe6WkkCprrtiavv7r9rJHbw01A3WdCucrzegXciULvx1Cegwc/Bi2qSc2fwBTT1FPHHsWE6kwk=\ntrusted comment: timestamp:1787390832\tfile:ghostty-vt.wasm\thashed\nwPIhkJ90Lo6a0XAV+lDiPiHjfU+n9dM576sP0bKurAtGOV1sxiE0dy4zOc+ZrD0pe3MqRZ6VO+ky3d77zU6OBw==\n",
-    "trustedComment": "timestamp:1787390832\tfile:ghostty-vt.wasm\thashed"
+    "signature": "untrusted comment: signature from minisign secret key\nRUQlAjJC23149YLmBRGcl2b9mN7MkDpAjAeZBgYEasPTomgZo5PpOyaF9rpP5OhmtOr1TKolZGzgrIcjNdugwSEaH66plxlO6QA=\ntrusted comment: timestamp:1790952999\tfile:ghostty-vt.wasm\thashed\n5QVmgExEM+ODWqngEqsyUe09wq0i+uC1vDaKM1+H+bkOMiOiuf9DbO4Smd9imjL27aqBAcx9J7nvN7CP09XyCA==\n",
+    "trustedComment": "timestamp:1790952999\tfile:ghostty-vt.wasm\thashed"
   }
 }
