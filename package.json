@@ -24,7 +24,7 @@
     "obsidian": "^1.13.1",
     "oxlint": "^1.77.0",
     "typescript": "^7.0.2",
-    "vite": "^8.2.1"
+    "vite": "^8.2.4"
   },
   "devEngines": {
     "packageManager": {
